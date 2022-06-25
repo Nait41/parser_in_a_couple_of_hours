@@ -1,10 +1,14 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import javax.swing.*;
 
 public class MainFormGUI extends JFrame{
     private JButton button = new JButton("Вычислить");
+    private JButton button_1 = new JButton("Открыть файл");
 
     private JTextField textField_1 = new JTextField("", 20);
     private JLabel label_1 = new JLabel("Дебет/Счет");
@@ -16,6 +20,8 @@ public class MainFormGUI extends JFrame{
     private JLabel label_3 = new JLabel("Название компании");
 
     private JLabel label_4 = new JLabel("Контрольная сумма");
+
+    String path;
 
     Box mainBox, box_1, box_2, box_3, box_4;
     public MainFormGUI () {
@@ -31,6 +37,7 @@ public class MainFormGUI extends JFrame{
         label_2.setAlignmentX(CENTER_ALIGNMENT);
         label_1.setAlignmentX(CENTER_ALIGNMENT);
         button.setAlignmentX(CENTER_ALIGNMENT);
+        button_1.setAlignmentX(CENTER_ALIGNMENT);
         mainBox = Box.createVerticalBox();
         box_1 = Box.createVerticalBox();
         box_2 = Box.createVerticalBox();
@@ -50,25 +57,62 @@ public class MainFormGUI extends JFrame{
         mainBox.add(box_2);
         mainBox.add(box_3);
         mainBox.add(box_4);
+        mainBox.add(Box.createVerticalStrut(5));
+        mainBox.add(button_1);
+        mainBox.add(Box.createVerticalStrut(5));
         mainBox.add(button);
 
-        button.addActionListener(new ButtonEventListener());
-
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed (ActionEvent e){
+                if(!textField_1.getText().equals("") && !textField_2.getText().equals("") && !textField_3.getText().equals("") && path != null)
+                {
+                    if(textField_1.getText().contains("."))
+                    {
+                        if(!textField_2.getText().contains(".") && !textField_2.getText().contains(","))
+                        {
+                            SumResearch sumResearch = new SumResearch();
+                            try {
+                                ResFormGUI resFormGUI = new ResFormGUI(sumResearch.findRes(textField_1.getText(), textField_2.getText(), textField_3.getText(), path));
+                            } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(null,
+                                    "Кредит/счет должен быть целым числом...",
+                                    "Сообщение об ошибке",JOptionPane.PLAIN_MESSAGE);
+                        }
+                    }
+                    else
+                    {
+                        JOptionPane.showMessageDialog(null,
+                                "Дебет/счет должен быть вещественным числом, либо вы указали запятую вместо точки...",
+                                "Сообщение об ошибке",JOptionPane.PLAIN_MESSAGE);
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null,
+                            "Присутствуют незаполненные поля! Возможно вы не указали путь к файлу или какую либо информацию по поиску данных...",
+                            "Сообщение об ошибке",JOptionPane.PLAIN_MESSAGE);
+                }
+            }
+        });
+        button_1.addActionListener(new ActionListener() {
+            public void actionPerformed (ActionEvent e){
+                try {
+                    OpenDocument openDocument = new OpenDocument();
+                    path = openDocument.path;
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
         setContentPane(mainBox);
         setVisible(true);
         pack();
     }
 
-    class ButtonEventListener implements ActionListener {
-        public void actionPerformed (ActionEvent e){
-            SumResearch sumResearch = new SumResearch();
-            try {
-                ResFormGUI resFormGUI = new ResFormGUI(sumResearch.findRes(textField_1.getText(), textField_2.getText(), textField_3.getText()));
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
     public class ResFormGUI extends JFrame{
 
         private JTextArea textField = new JTextArea();

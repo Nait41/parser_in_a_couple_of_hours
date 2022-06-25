@@ -1,26 +1,26 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SumResearch {
-    String findRes(String fieldFirst, String fieldSecond, String nameCompany) throws FileNotFoundException {
+    String findRes(String fieldFirst, String fieldSecond, String nameCompany, String path) throws FileNotFoundException, UnsupportedEncodingException {
         String result = "";
         ArrayList<ArrayList<String>> answerList = new ArrayList<ArrayList<String>>();
-        File file = new File("D:\\parser\\book14.TXT");
-        Scanner scanner = new Scanner(file);
+        File file = new File(path);
+        Scanner scanner = new Scanner(file, "windows-1251");
         while(scanner.hasNextLine()){
             String check = scanner.nextLine();
+            System.out.println(check);
             if(check.toCharArray()[1] >= '0' && check.toCharArray()[1] <= '9'){
                 if(check.contains(fieldFirst) && check.contains(fieldSecond)) {
-                    System.out.println(check);
                     char[] fullLineFirst = check.toCharArray();
                     int ccch = check.indexOf("\t" + fieldSecond + "\t");
                     check = scanner.nextLine();
                     check = scanner.nextLine();
                     check = scanner.nextLine();
-                    System.out.println(check);
-                    System.out.println("\n");
                     char[] fullLineSecond = check.toCharArray();
                     char[] dataLine = new char[10];
                     char[] nameLine = new char[fullLineSecond.length-4];
@@ -62,9 +62,6 @@ public class SumResearch {
                         strNameLine += nameLine[t - 1];
                     }
                     String strDataLine = new String(dataLine);
-                    System.out.println(strDataLine);
-                    System.out.println(strNameLine);
-                    System.out.println(bufSum);
                     ArrayList<String> reAnswerList = new ArrayList<String>();
                     reAnswerList.add(strDataLine);
                     reAnswerList.add(strNameLine);
@@ -73,13 +70,8 @@ public class SumResearch {
                 }
             }
         }
-        for(int t = 0; t<answerList.size(); t++)
-        {
-            System.out.println(answerList.get(t).get(0) + " " + answerList.get(t).get(1) + " " + answerList.get(t).get(2));
-        }
         double resSum = 0;
         ArrayList<String> lastAnswerList = new ArrayList<String>();
-        System.out.println("\n \n \n");
         for(Integer t = 0; t < answerList.size(); t++)
         {
             resSum += Double.parseDouble(answerList.get(t).get(2));
@@ -98,14 +90,12 @@ public class SumResearch {
             }
             lastAnswerList.add(answerList.get(t).get(0) + " " + answerList.get(t).get(1) + " " + String.format("%.2f",resSum));
             if(answerList.get(t).get(1).contains(nameCompany)){
-                System.out.println(result);
                 result += lastAnswerList.get(t);
                 result += "\n";
             }
             resSum = 0;
             answerList.remove(answerList.get(t));
         }
-        System.out.println(result);
         return result;
     }
 }
