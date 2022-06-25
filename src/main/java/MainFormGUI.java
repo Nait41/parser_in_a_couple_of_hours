@@ -27,7 +27,7 @@ public class MainFormGUI extends JFrame{
     public MainFormGUI () {
         super();
         Font font = new Font("Verdana", Font.BOLD, 16);
-        this.setIconImage(new ImageIcon("D:\\parser\\icon1.png").getImage());
+        this.setIconImage(new ImageIcon("D:\\parser\\icon.png").getImage());
         setLocation(900, 400);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
